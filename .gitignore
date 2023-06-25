@@ -1,0 +1,8 @@
+royman_tools.egg-info
+build
+dist
+__pycache__
+.env
+.venv
+env
+venv
