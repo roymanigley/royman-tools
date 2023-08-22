@@ -4,16 +4,14 @@ import os
 
 class ProjectCreator():
 
-
     def __init__(self, project_name: str):
         self.project_name = project_name
-        self.package_name=project_name.replace('-', '_').replace(' ', '_')
-
+        self.package_name = project_name.replace('-', '_').replace(' ', '_')
 
     def create_readme(self) -> None:
         with open(f'{self.project_name}/README.md', 'w') as f:
             f.write(
-f'''# {self.project_name}
+                f'''# {self.project_name}
 > description
 
 ## Installation
@@ -28,11 +26,10 @@ python setup.py install
 '''
             )
 
-
     def create_license(self) -> None:
         with open(f'{self.project_name}/LICENSE', 'w') as f:
             f.write(
-'''MIT License
+                '''MIT License
 
 Copyright (c) 2022 roymanigley
 
@@ -55,12 +52,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
             )
-        
 
     def create_gitignore(self) -> None:
         with open(f'{self.project_name}/.gitignore', 'w') as f:
             f.write(
-f'''{self.package_name}.egg-info
+                f'''{self.package_name}.egg-info
 build
 dist
 __pycache__
@@ -72,11 +68,10 @@ venv
 '''
             )
 
-
     def create_setup_file(self) -> None:
         with open(f'{self.project_name}/setup.py', 'w') as f:
             f.write(
-f'''from setuptools import setup, find_packages
+                f'''from setuptools import setup, find_packages
 
 long_description = open('README.md', "rt").read()
 
@@ -112,33 +107,29 @@ setup(
 '''
             )
 
-
     def create_publish_script(self) -> None:
         with open(f'{self.project_name}/publish.sh', 'w') as f:
             f.write(
-''' #!/bin/bash
+                ''' #!/bin/bash
 rm ./dist/*.whl
 python setup.py sdist bdist_wheel
 twine upload dist/*.whl
-'''         )
-
+''')
 
     def create_requirements(self) -> None:
         with open(f'{self.project_name}/requirements.txt', 'w') as f:
             f.write(
-'''
+                '''
 wheel
 twine==4.0.2
 '''
             )
-
 
     def create_sources(self) -> None:
         source_dir = f'{self.project_name}/{self.package_name}'
         os.mkdir(source_dir)
         with open(f'{source_dir}/__init__.py', 'w') as f:
             f.write('# __init__.py')
-
 
     def generate(self) -> None:
         try:
@@ -163,10 +154,10 @@ twine==4.0.2
 
 @click.command()
 @click.option(
-        '--project-name', 
-        prompt='Enter the project name', 
-        help='the project you want to create', 
-        type=str
+    '--project-name',
+    prompt='Enter the project name',
+    help='the project you want to create',
+    type=str
 )
 def main(project_name: str) -> None:
     ProjectCreator(project_name).generate()
