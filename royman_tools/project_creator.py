@@ -68,6 +68,7 @@ __pycache__
 .venv
 env
 venv
+.idea
 '''
             )
 

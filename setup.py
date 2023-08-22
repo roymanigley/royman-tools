@@ -4,7 +4,7 @@ long_description = open('README.md', "rt").read()
 
 setup(
     name='royman_tools',
-    version='0.0.1',    
+    version='0.0.2',
     description='A collection of tools',
     long_description=long_description,
     long_description_content_type='text/markdown',
